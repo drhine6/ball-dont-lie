@@ -1,4 +1,6 @@
-export const teams = [
+import { TeamInfo } from '../types/types';
+
+export const teams: TeamInfo[] = [
   {
     name: 'Auburn',
     logoId: '2',
