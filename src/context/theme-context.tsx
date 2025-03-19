@@ -20,34 +20,63 @@ const ThemeContext = createContext<ThemeContextType | undefined>(
   undefined,
 );
 
-export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+// Check if we're in the browser environment
+const isBrowser = typeof window !== 'undefined';
 
-  // On mount, read dark mode preference from localStorage or system preference
+// Function to detect if dark mode is already active
+const isDarkModeActive = () => {
+  if (!isBrowser) return false;
+  return document.documentElement.classList.contains('dark');
+};
+
+// Function to set a cookie with theme preference
+const setThemeCookie = (isDark: boolean) => {
+  // Set cookie that expires in 1 year
+  const oneYear = 365 * 24 * 60 * 60 * 1000;
+  const expires = new Date(Date.now() + oneYear).toUTCString();
+  document.cookie = `theme=${
+    isDark ? 'dark' : 'light'
+  }; expires=${expires}; path=/; samesite=strict`;
+};
+
+export function ThemeProvider({ children }: ThemeProviderProps) {
+  // Initialize with the current state from the document to prevent flashing
+  const [isDarkMode, setIsDarkMode] = useState(isDarkModeActive());
+
+  // On mount, ensure localStorage matches the current state
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme');
     const systemPrefersDark = window.matchMedia(
       '(prefers-color-scheme: dark)',
     ).matches;
 
-    // Set initial theme based on localStorage or system preference
-    if (
-      storedTheme === 'dark' ||
-      (!storedTheme && systemPrefersDark)
-    ) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
-    } else {
-      setIsDarkMode(false);
-      document.documentElement.classList.remove('dark');
+    // Check if we need to update the state or the document
+    const shouldBeDark =
+      storedTheme === 'dark' || (!storedTheme && systemPrefersDark);
+
+    if (shouldBeDark !== isDarkMode) {
+      setIsDarkMode(shouldBeDark);
+
+      if (shouldBeDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+      // Also set the cookie for server-side rendering
+      setThemeCookie(shouldBeDark);
     }
-  }, []);
+  }, [isDarkMode]);
 
   const toggleDarkMode = () => {
     setIsDarkMode((prev) => {
       const newValue = !prev;
       // Store in localStorage
       localStorage.setItem('theme', newValue ? 'dark' : 'light');
+
+      // Also set cookie for server-side rendering
+      setThemeCookie(newValue);
+
       // Toggle class on document
       if (newValue) {
         document.documentElement.classList.add('dark');
