@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Space_Grotesk } from 'next/font/google';
 import './globals.css';
+import ModeToggle from '@/components/mode-toggle';
+import { ThemeProvider } from '@/context/theme-context';
 
 const spaceGrotesk = Space_Grotesk({
   variable: '--font-space-grotesk',
@@ -32,7 +34,10 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${geistSans.variable} ${geistMono.variable} antialiased bg-bg`}
       >
-        {children}
+        <ThemeProvider>
+          <ModeToggle />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

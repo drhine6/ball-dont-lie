@@ -3,7 +3,7 @@ export type Region = 'South' | 'East' | 'West' | 'Midwest';
 type BetType = 'Upset Alert' | 'Favorite' | 'Total Bet';
 type Recommendation = string; // Could be a team name, "OVER", "UNDER", etc.
 
-export interface TeamInfo {
+export interface Team {
   name: string;
   logoId?: string;
   seed: number;
@@ -11,7 +11,7 @@ export interface TeamInfo {
   region: Region;
 }
 
-export interface GameData {
+export interface Game {
   game: string;
   region: Region;
   balls: string;

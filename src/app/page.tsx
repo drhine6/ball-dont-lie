@@ -8,13 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { GameTable } from '@/components/game-table';
+import { GameTable } from '@/components/game-table/game-table';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
+import ModeToggle from '@/components/mode-toggle';
 // Define types for our data
 
 const BettingDashboard: React.FC = () => {
@@ -52,7 +53,7 @@ const BettingDashboard: React.FC = () => {
           Recommendations based on the ball advantage theory
         </p>
       </div>
-      <Card className="mt-8 p-4 bg-white rounded-lg shadow-md">
+      <Card className="mt-8 p-4 bg-bw rounded-lg shadow-md">
         <CardHeader>
           <CardTitle>Ball Advantage Betting Rules</CardTitle>
         </CardHeader>

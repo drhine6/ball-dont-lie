@@ -1,8 +1,8 @@
-import { GameData, Region } from '@/types/types';
+import { Game, Region } from '@/types/types';
 
 export const regions: Region[] = ['South', 'East', 'West', 'Midwest'];
 
-export const games: GameData[] = [
+export const games: Game[] = [
   // South Region
   {
     game: 'Auburn (1) vs. Alabama St. (16)',
