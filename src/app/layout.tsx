@@ -4,6 +4,7 @@ import './globals.css';
 import ModeToggle from '@/components/mode-toggle';
 import { ThemeProvider } from '@/context/theme-context';
 import { Footer } from '@/components/footer';
+import { Analytics } from '@vercel/analytics/react';
 
 const spaceGrotesk = Space_Grotesk({
   variable: '--font-space-grotesk',
@@ -73,6 +74,7 @@ export default function RootLayout({
           <Footer />
         </ThemeProvider>
       </body>
+      <Analytics />
     </html>
   );
 }
