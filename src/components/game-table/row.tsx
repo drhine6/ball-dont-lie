@@ -1,5 +1,6 @@
 import { useTeamLogo } from '@/hooks/useTeamLogo';
 import { Game, Team } from '@/types/types';
+import { TableCell, TableRow } from '../ui/table';
 
 export function GameTableRow({
   game,
@@ -16,8 +17,8 @@ export function GameTableRow({
   const team2Logo = useTeamLogo(team2.logoId);
 
   return (
-    <tr className={even ? 'bg-bw' : 'bg-bg'}>
-      <td className="py-3 px-4">
+    <TableRow className={even ? 'bg-bw' : 'bg-bg'}>
+      <TableCell className="py-3 px-4">
         <div className="flex items-center space-x-2">
           <div className="flex flex-col items-center mr-3">
             <img
@@ -55,8 +56,8 @@ export function GameTableRow({
             <div className="text-xs text-gray-500">{team2.brand}</div>
           </div>
         </div>
-      </td>
-      <td className="py-3 px-4">
+      </TableCell>
+      <TableCell className="py-3 px-4">
         <div className="flex flex-col">
           <span
             className={`font-medium ${
@@ -74,8 +75,8 @@ export function GameTableRow({
             {team2.brand}
           </span>
         </div>
-      </td>
-      <td
+      </TableCell>
+      <TableCell
         className={`py-3 px-4 font-medium ${
           game.recommendation.includes('UNDER')
             ? 'text-blue-600'
@@ -83,12 +84,12 @@ export function GameTableRow({
             ? 'text-green-600'
             : game.type === 'Upset Alert'
             ? 'text-red-600'
-            : 'text-black'
+            : 'text-text'
         }`}
       >
         {game.recommendation}
-      </td>
-      <td className="py-3 px-4">
+      </TableCell>
+      <TableCell className="py-3 px-4">
         <span
           className={`px-2 py-1 text-xs font-medium rounded-full ${
             game.type === 'Upset Alert'
@@ -100,7 +101,7 @@ export function GameTableRow({
         >
           {game.type}
         </span>
-      </td>
-    </tr>
+      </TableCell>
+    </TableRow>
   );
 }
