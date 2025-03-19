@@ -1,28 +1,22 @@
-'use client';
 import React from 'react';
-import { Region } from '@/types/types';
-import { regions } from '@/data/games';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { GameTable } from '@/components/game-table';
+import { GameTableServer } from '@/components/game-table-server';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import { Stats } from '@/components/stats';
+import { StatsServer } from '@/components/stats-server';
 import { Hero } from '@/components/hero';
 import { Overview } from '@/components/overview';
-// Define types for our data
 
-const Dashboard: React.FC = () => {
-  // Count recommendations by type for stats display
-
+export default function Dashboard() {
   return (
     <div className="py-24 px-4 lg:px-20 max-w-6xl mx-auto font-[Space_Grotesk] space-y-4">
       <Hero />
@@ -32,10 +26,8 @@ const Dashboard: React.FC = () => {
         </h1>
       </div>
       <Overview />
-      <Stats />
-      <GameTable />
+      <StatsServer />
+      <GameTableServer />
     </div>
   );
-};
-
-export default Dashboard;
+}
