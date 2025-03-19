@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/table';
 import { useTeamLogo } from '@/hooks/useTeamLogo';
 import { Input } from './ui/input';
-import { AlertCircle } from 'lucide-react';
 
 // Define the extended Game type that includes the 'type' field and relations
 type ExtendedGame = Game & {
@@ -24,14 +23,14 @@ type ExtendedGame = Game & {
 
 interface GameTableClientProps {
   initialGames: ExtendedGame[];
-  initialTeams: Team[];
 }
 
 export function GameTableClient({
   initialGames,
-  initialTeams,
 }: GameTableClientProps) {
   const [search, setSearch] = useState('');
+
+  console.log(initialGames.map((game) => game.game));
 
   // Filter games based on search
   const filteredGames = initialGames.filter((game) => {

@@ -14,6 +14,8 @@
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts",
     "prisma:update-locations": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/school-locations.ts",
+    "prisma:update-game-locations": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/game-locations.ts",
+    "prisma:create-locations": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/create-locations.ts",
     "db:init": "npm run prisma:generate && npm run prisma:migrate && npm run prisma:seed",
     "db:reset": "prisma migrate reset"
   },
