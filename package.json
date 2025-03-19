@@ -12,7 +12,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
+    "prisma:seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts",
+    "prisma:update-locations": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/school-locations.ts",
     "db:init": "npm run prisma:generate && npm run prisma:migrate && npm run prisma:seed",
     "db:reset": "prisma migrate reset"
   },

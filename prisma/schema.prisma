@@ -41,12 +41,9 @@ model Team {
   region    Region
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  homeLocation  String?
+  location  String?
   latitude  Float?
   longitude Float?
-  // Relations
-  homeGames Game[]   @relation("HomeTeam")
-  awayGames Game[]   @relation("AwayTeam")
 }
 
 // Game model matching the Game interface in types.ts
@@ -59,23 +56,12 @@ model Game {
   betType       BetType
   confidence    Confidence
   createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  
-  // Relations
+  updatedAt     DateTime   @updatedAt  
   team1Id       String
-  team2Id       String
-  team1         Team       @relation("HomeTeam", fields: [team1Id], references: [id])
-  team2         Team       @relation("AwayTeam", fields: [team2Id], references: [id])
+  team2Id       String  
   team1Score    Int?
   team2Score    Int?
   outcome String?
-}
-
-model Location {
-  id        String   @id @default(uuid())
-  name      String
-  latitude  Float
-  longitude Float
 }
 
 // Enum types from types.ts
