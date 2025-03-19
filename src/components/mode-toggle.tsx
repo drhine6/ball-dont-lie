@@ -12,7 +12,7 @@ const Toggle = () => {
   return (
     <Button
       onClick={toggleDarkMode}
-      className="h-12 w-12 overflow-hidden fixed top-4 left-4"
+      className="h-12 w-12 overflow-hidden lg:fixed absolute top-4 left-4"
     >
       <motion.div
         initial={{ y: 0, opacity: 1 }}

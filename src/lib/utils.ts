@@ -32,6 +32,8 @@ export function transformToPascalCase(input: string): string {
 
 export const getTeamLogoUrl = (id?: string, isDarkMode?: boolean) => {
   const location = isDarkMode ? '500-dark' : '500';
-  if (!id) return '/basketball.svg';
+  if (!id) {
+    return isDarkMode ? '/basketball-dark.svg' : '/basketball.svg';
+  }
   return `https://a.espncdn.com/i/teamlogos/ncaa/${location}/${id}.png`;
 };

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import ModeToggle from '@/components/mode-toggle';
 import { ThemeProvider } from '@/context/theme-context';
+import { Footer } from '@/components/footer';
 
 const spaceGrotesk = Space_Grotesk({
   variable: '--font-space-grotesk',
@@ -20,7 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ball Don't Lie",
+  title: 'The Wilson Theory',
 };
 
 export default function RootLayout({
@@ -30,6 +31,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <link
+        rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏀</text></svg>"
+      />
       <head>
         {/* Inline script to check and apply dark mode before the page renders to prevent flash */}
         <script
@@ -65,6 +70,7 @@ export default function RootLayout({
         <ThemeProvider>
           <ModeToggle />
           {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
