@@ -65,7 +65,7 @@
 
   --font-weight-base: 500;
   --font-weight-heading: 700;
-
+  --font-family-base: 'Space Grotesk', sans-serif;
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-marquee: marquee 5s linear infinite;
@@ -118,5 +118,19 @@
     50% {
       opacity: 0;
     }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-bg text-text;
+  }
+  .text-shadow-neo {
+    text-shadow: 3px 3px #0f172a;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #0f172a;
   }
 }

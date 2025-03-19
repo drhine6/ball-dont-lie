@@ -9,10 +9,10 @@ export const teams: TeamInfo[] = [
     region: 'South',
   },
   {
-    name: 'First Four Winner',
-    logoId: '/basketball.svg',
+    name: 'Alabama St.',
+    logoId: '2011',
     seed: 16,
-    brand: 'TBD',
+    brand: 'Wilson',
     region: 'South',
   },
   {
@@ -288,8 +288,7 @@ export const teams: TeamInfo[] = [
     region: 'West',
   },
   {
-    name: 'First Four Winner',
-    logoId: '/basketball.svg',
+    name: 'TEX/XAV',
     seed: 11,
     brand: 'TBD',
     region: 'West',
@@ -344,8 +343,7 @@ export const teams: TeamInfo[] = [
     region: 'Midwest',
   },
   {
-    name: 'First Four Winner',
-    logoId: '/basketball.svg',
+    name: 'AMER/MSM',
     seed: 16,
     brand: 'TBD',
     region: 'Midwest',

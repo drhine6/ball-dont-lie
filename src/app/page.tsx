@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { Region } from '@/types/types';
 import { games, regions } from '@/data/games';
 import {
@@ -43,66 +43,15 @@ const BettingDashboard: React.FC = () => {
   const stats = countRecommendations();
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-text mb-2">
+    <div className="p-6 max-w-6xl mx-auto font-[Space_Grotesk] space-y-4">
+      <div className="text-center">
+        <h1 className="text-6xl font-bold text-main mb-2 text-shadow-neo">
           March Madness Ball Don't Lie
         </h1>
         <p className="text-gray-600">
           Recommendations based on the ball advantage theory
         </p>
-        <div className="flex justify-center gap-4 mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Favorite Bets</CardTitle>
-            </CardHeader>
-            <CardContent className="text-4xl font-bold">
-              {stats.favorites}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Underdog Bets</CardTitle>
-            </CardHeader>
-            <CardContent className="text-4xl font-bold">
-              {stats.underdogs}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>OVER Bets</CardTitle>
-            </CardHeader>
-            <CardContent className="text-4xl font-bold">
-              {stats.overs}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>UNDER Bets</CardTitle>
-            </CardHeader>
-            <CardContent className="text-4xl font-bold">
-              {stats.unders}
-            </CardContent>
-          </Card>
-        </div>
       </div>
-      <Tabs defaultValue="South">
-        <div className="flex">
-          <TabsList className="flex justify-center gap-4 mx-auto">
-            {regions.map((region: Region) => (
-              <TabsTrigger key={region} value={region}>
-                {region}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </div>
-        {regions.map((region: Region) => (
-          <TabsContent key={region} value={region}>
-            <GameTable region={region} />
-          </TabsContent>
-        ))}
-      </Tabs>
-
       <Card className="mt-8 p-4 bg-white rounded-lg shadow-md">
         <CardHeader>
           <CardTitle>Ball Advantage Betting Rules</CardTitle>
@@ -126,6 +75,57 @@ const BettingDashboard: React.FC = () => {
           </ul>
         </CardContent>
       </Card>
+      <div className="flex justify-center gap-4 mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Favorite Bets</CardTitle>
+          </CardHeader>
+          <CardContent className="text-4xl font-bold">
+            {stats.favorites}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Underdog Bets</CardTitle>
+          </CardHeader>
+          <CardContent className="text-4xl font-bold">
+            {stats.underdogs}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>OVER Bets</CardTitle>
+          </CardHeader>
+          <CardContent className="text-4xl font-bold">
+            {stats.overs}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>UNDER Bets</CardTitle>
+          </CardHeader>
+          <CardContent className="text-4xl font-bold">
+            {stats.unders}
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="South">
+        <div className="flex">
+          <TabsList className="flex justify-center gap-4 mx-auto">
+            {regions.map((region: Region) => (
+              <TabsTrigger key={region} value={region}>
+                {region}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+        {regions.map((region: Region) => (
+          <TabsContent key={region} value={region}>
+            <GameTable region={region} />
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
   );
 };

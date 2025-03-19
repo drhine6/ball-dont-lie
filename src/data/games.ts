@@ -5,14 +5,14 @@ export const regions: Region[] = ['South', 'East', 'West', 'Midwest'];
 export const games: GameData[] = [
   // South Region
   {
-    game: 'Auburn (1) vs. First Four Winner (16)',
+    game: 'Auburn (1) vs. Alabama St. (16)',
     region: 'South',
-    balls: 'Wilson vs. TBD',
-    recommendation: 'Auburn',
-    type: 'Favorite',
+    balls: 'Wilson vs. Wilson',
+    recommendation: 'OVER',
+    type: 'Total Bet',
     confidence: 'High',
     team1: 'Auburn',
-    team2: 'First Four Winner',
+    team2: 'Alabama St.',
   },
   {
     game: 'Louisville (8) vs. Creighton (9)',
@@ -207,14 +207,14 @@ export const games: GameData[] = [
     team2: 'High Point',
   },
   {
-    game: 'Illinois (6) vs. First Four Winner (11)',
+    game: 'Illinois (6) vs. TEX/XAV (11)',
     region: 'West',
     balls: 'Nike vs. TBD',
     recommendation: 'UNDER or TBD',
     type: 'Total Bet',
     confidence: 'Medium',
     team1: 'Illinois',
-    team2: 'First Four Winner',
+    team2: 'TEX/XAV',
   },
   {
     game: 'Kentucky (3) vs. Troy (14)',
@@ -248,14 +248,14 @@ export const games: GameData[] = [
   },
   // Midwest Region
   {
-    game: 'Duke (1) vs. First Four Winner (16)',
+    game: 'Duke (1) vs. AMER/MSM (16)',
     region: 'Midwest',
     balls: 'Nike vs. TBD',
     recommendation: 'UNDER or TBD',
     type: 'Total Bet',
     confidence: 'Medium',
     team1: 'Duke',
-    team2: 'First Four Winner',
+    team2: 'AMER/MSM',
   },
   {
     game: 'Mississippi State (8) vs. Baylor (9)',
