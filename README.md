@@ -81,3 +81,67 @@ npm run prisma:studio
 ```
 
 This will open Prisma Studio in your browser, allowing you to explore and edit your database data.
+
+## Deployment
+
+This application is set up for easy deployment to Vercel or other platforms.
+
+### Prerequisites
+
+1. Make sure your database is properly set up and accessible from your deployment environment
+2. Ensure all environment variables are configured in your deployment platform
+
+### Deploy to Vercel
+
+1. Install Vercel CLI if you haven't already:
+
+   ```bash
+   npm install -g vercel
+   ```
+
+2. Login to Vercel:
+
+   ```bash
+   vercel login
+   ```
+
+3. Deploy the application:
+
+   ```bash
+   vercel
+   ```
+
+   Or for production deployment:
+
+   ```bash
+   vercel --prod
+   ```
+
+### Environment Variables
+
+Ensure the following environment variables are set in your deployment environment:
+
+- `DATABASE_URL`: Your PostgreSQL connection string (including Prisma Accelerate if used)
+- Any other environment variables needed for your application
+
+### Build Configuration
+
+The application is configured to automatically generate Prisma client during the build process with these custom scripts:
+
+- `npm run build`: Generates Prisma client and builds the Next.js application
+- `npm run build:production`: Same as above but with NODE_ENV set to production
+
+### Manual Deployment
+
+If not using Vercel, you can deploy manually with:
+
+1. Build the application:
+
+   ```bash
+   npm run build:production
+   ```
+
+2. Start the application:
+   ```bash
+   npm run start
+   ```
