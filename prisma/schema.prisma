@@ -62,6 +62,9 @@ model Game {
   team2Id       String
   team1         Team       @relation("HomeTeam", fields: [team1Id], references: [id])
   team2         Team       @relation("AwayTeam", fields: [team2Id], references: [id])
+  team1Score    Int?
+  team2Score    Int?
+  outcome String?
 }
 
 // Enum types from types.ts

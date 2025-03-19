@@ -1,6 +1,7 @@
-import { games } from '@/data/games';
-import { teams } from '@/data/teams';
-import { Team, Game } from '@/types/types';
+'use client';
+
+import { useState } from 'react';
+import { Team, Game } from '@prisma/client';
 import {
   Table,
   TableBody,
@@ -10,20 +11,43 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useTeamLogo } from '@/hooks/useTeamLogo';
-import { Input } from '../ui/input';
-import { useState } from 'react';
+import { Input } from './ui/input';
+import { useGamesAndTeams } from '@/hooks/useGamesAndTeams';
+import { LoadingMessage } from './ui/loading';
+import { AlertCircle } from 'lucide-react';
+
+// Define the extended Game type that includes the 'type' field and relations
+type ExtendedGame = Game & {
+  team1: Team;
+  team2: Team;
+  type: string;
+  game: string;
+};
+
 export function GameTable() {
   const [search, setSearch] = useState('');
-  const findTeam = (teamName: string): Team | undefined => {
-    return teams.find((team) => team.name === teamName);
-  };
+  const { games, teams, loading, error } = useGamesAndTeams();
 
+  // Filter games based on search
   const filteredGames = games.filter((game) => {
     return (
-      game.team1.toLowerCase().includes(search.toLowerCase()) ||
-      game.team2.toLowerCase().includes(search.toLowerCase())
+      game.team1.name.toLowerCase().includes(search.toLowerCase()) ||
+      game.team2.name.toLowerCase().includes(search.toLowerCase())
     );
   });
+
+  if (loading) {
+    return <LoadingMessage message="Loading games and teams..." />;
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center text-red-500 py-8">
+        <AlertCircle className="h-8 w-8 mb-2" />
+        <p>Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -33,64 +57,52 @@ export function GameTable() {
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search by team..."
       />
-      <Table className="min-w-full">
-        <TableHeader className="bg-gray-100">
-          <TableRow>
-            <TableHead className="py-3 px-4 text-left">
-              Matchup
-            </TableHead>
-            <TableHead className="py-3 px-4 text-left">
-              Basketballs
-            </TableHead>
-            <TableHead className="py-3 px-4 text-left">
-              Recommendation
-            </TableHead>
-            <TableHead className="py-3 px-4 text-left">
-              Type
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody className="divide-y divide-gray-200">
-          {filteredGames.map((game, index) => {
-            const team1 = findTeam(game.team1);
-            const team2 = findTeam(game.team2);
-            if (!team1) {
-              console.log('team not found', game);
-              return null;
-            }
-            if (!team2) {
-              console.log('team not found', game);
-              return null;
-            }
-            return (
+      {filteredGames.length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground">
+          No games match your search
+        </div>
+      ) : (
+        <Table className="min-w-full">
+          <TableHeader className="bg-gray-100">
+            <TableRow>
+              <TableHead className="py-3 px-4 text-left">
+                Matchup
+              </TableHead>
+              <TableHead className="py-3 px-4 text-left">
+                Basketballs
+              </TableHead>
+              <TableHead className="py-3 px-4 text-left">
+                Recommendation
+              </TableHead>
+              <TableHead className="py-3 px-4 text-left">
+                Type
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="divide-y divide-gray-200">
+            {filteredGames.map((game, index) => (
               <GameTableRow
-                key={index}
-                game={game}
-                team1={team1}
-                team2={team2}
+                key={game.id}
+                game={game as unknown as ExtendedGame}
                 even={index % 2 === 0}
               />
-            );
-          })}
-        </TableBody>
-      </Table>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </>
   );
 }
 
 function GameTableRow({
   game,
-  team1,
-  team2,
   even,
 }: {
-  game: Game;
-  team1: Team;
-  team2: Team;
+  game: ExtendedGame;
   even: boolean;
 }) {
-  const team1Logo = useTeamLogo(team1.logoId);
-  const team2Logo = useTeamLogo(team2.logoId);
+  const team1Logo = useTeamLogo(game.team1.logoId || undefined);
+  const team2Logo = useTeamLogo(game.team2.logoId || undefined);
 
   return (
     <TableRow className={even ? 'bg-bw' : 'bg-bg'}>
@@ -99,16 +111,18 @@ function GameTableRow({
           <div className="flex flex-col items-center mr-3">
             <img
               src={team1Logo}
-              alt={`${team1.name} logo`}
+              alt={`${game.team1.name} logo`}
               className="w-8 h-8 object-contain"
             />
             <span className="text-xs text-gray-600">
-              ({team1.seed})
+              ({game.team1.seed})
             </span>
           </div>
           <div className="flex flex-col flex-grow">
-            <div className="font-medium">{team1.name}</div>
-            <div className="text-xs text-gray-500">{team1.brand}</div>
+            <div className="font-medium">{game.team1.name}</div>
+            <div className="text-xs text-gray-500">
+              {game.team1.brand}
+            </div>
           </div>
         </div>
         <div className="flex items-center my-2">
@@ -120,16 +134,18 @@ function GameTableRow({
           <div className="flex flex-col items-center mr-3">
             <img
               src={team2Logo}
-              alt={`${team2.name} logo`}
+              alt={`${game.team2.name} logo`}
               className="w-8 h-8 object-contain"
             />
             <span className="text-xs text-gray-600">
-              ({team2.seed})
+              ({game.team2.seed})
             </span>
           </div>
           <div className="flex flex-col flex-grow">
-            <div className="font-medium">{team2.name}</div>
-            <div className="text-xs text-gray-500">{team2.brand}</div>
+            <div className="font-medium">{game.team2.name}</div>
+            <div className="text-xs text-gray-500">
+              {game.team2.brand}
+            </div>
           </div>
         </div>
       </TableCell>
@@ -137,18 +153,18 @@ function GameTableRow({
         <div className="flex flex-col">
           <span
             className={`font-medium ${
-              team1.brand === 'Wilson' ? 'text-green-600' : ''
+              game.team1.brand === 'Wilson' ? 'text-green-600' : ''
             }`}
           >
-            {team1.brand}
+            {game.team1.brand}
           </span>
           <span className="text-xs my-1">vs</span>
           <span
             className={`font-medium ${
-              team2.brand === 'Wilson' ? 'text-green-600' : ''
+              game.team2.brand === 'Wilson' ? 'text-green-600' : ''
             }`}
           >
-            {team2.brand}
+            {game.team2.brand}
           </span>
         </div>
       </TableCell>

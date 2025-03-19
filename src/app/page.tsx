@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { GameTable } from '@/components/game-table/game-table';
+import { GameTable } from '@/components/game-table';
 import {
   Tabs,
   TabsContent,
