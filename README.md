@@ -34,3 +34,50 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Database Integration
+
+This application now uses a PostgreSQL database via Prisma ORM. The database stores:
+
+- Users and their theme preferences
+- Teams with their details
+- Games with matchups and betting recommendations
+
+### Database Schema
+
+The database schema is defined in `prisma/schema.prisma` and includes:
+
+- User model for storing theme preferences
+- Team model matching the Team interface
+- Game model matching the Game interface
+- Enums for regions, bet types, and confidence levels
+
+### Setup Database
+
+```bash
+# Generate Prisma client
+npm run prisma:generate
+
+# Create and apply migrations
+npm run prisma:migrate
+
+# Seed database with initial data
+npm run prisma:seed
+
+# Or run all at once
+npm run db:init
+```
+
+### Reset Database
+
+```bash
+npm run db:reset
+```
+
+### Explore Database
+
+```bash
+npm run prisma:studio
+```
+
+This will open Prisma Studio in your browser, allowing you to explore and edit your database data.

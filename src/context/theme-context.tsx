@@ -6,6 +6,10 @@ import {
   useEffect,
   useState,
 } from 'react';
+import {
+  getAnonymousUserId,
+  saveThemePreference,
+} from '@/lib/client-utils';
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -14,6 +18,7 @@ type ThemeProviderProps = {
 type ThemeContextType = {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
+  isThemeReady: boolean;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(
@@ -29,22 +34,24 @@ const isDarkModeActive = () => {
   return document.documentElement.classList.contains('dark');
 };
 
-// Function to set a cookie with theme preference
-const setThemeCookie = (isDark: boolean) => {
-  // Set cookie that expires in 1 year
-  const oneYear = 365 * 24 * 60 * 60 * 1000;
-  const expires = new Date(Date.now() + oneYear).toUTCString();
-  document.cookie = `theme=${
-    isDark ? 'dark' : 'light'
-  }; expires=${expires}; path=/; samesite=strict`;
-};
-
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  // Initialize with the current state from the document to prevent flashing
-  const [isDarkMode, setIsDarkMode] = useState(isDarkModeActive());
+  // Start with a safe state to prevent hydration mismatch
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isThemeReady, setIsThemeReady] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  // On mount, ensure localStorage matches the current state
+  // First mount effect - get the anonymous user ID
   useEffect(() => {
+    const anonymousId = getAnonymousUserId();
+    if (anonymousId) {
+      setUserId(anonymousId);
+    }
+  }, []);
+
+  // On mount or when userId is available, determine the theme
+  useEffect(() => {
+    if (!isBrowser) return;
+
     const storedTheme = localStorage.getItem('theme');
     const systemPrefersDark = window.matchMedia(
       '(prefers-color-scheme: dark)',
@@ -54,28 +61,34 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     const shouldBeDark =
       storedTheme === 'dark' || (!storedTheme && systemPrefersDark);
 
-    if (shouldBeDark !== isDarkMode) {
-      setIsDarkMode(shouldBeDark);
+    // Update state and document
+    setIsDarkMode(shouldBeDark);
 
-      if (shouldBeDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-
-      // Also set the cookie for server-side rendering
-      setThemeCookie(shouldBeDark);
+    if (shouldBeDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
-  }, [isDarkMode]);
 
-  const toggleDarkMode = () => {
+    // Mark theme as ready
+    setIsThemeReady(true);
+
+    // If we have a userId, sync with the server
+    if (userId) {
+      saveThemePreference(
+        userId,
+        shouldBeDark ? 'dark' : 'light',
+      ).catch((err) =>
+        console.error('Failed to sync theme with server:', err),
+      );
+    }
+  }, [userId]);
+
+  const toggleDarkMode = async () => {
     setIsDarkMode((prev) => {
       const newValue = !prev;
       // Store in localStorage
       localStorage.setItem('theme', newValue ? 'dark' : 'light');
-
-      // Also set cookie for server-side rendering
-      setThemeCookie(newValue);
 
       // Toggle class on document
       if (newValue) {
@@ -83,12 +96,26 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       } else {
         document.documentElement.classList.remove('dark');
       }
+
+      // If we have a userId, save to database via API
+      if (userId) {
+        // We don't await this to keep the UI responsive
+        saveThemePreference(
+          userId,
+          newValue ? 'dark' : 'light',
+        ).catch((err) =>
+          console.error('Failed to save theme to server:', err),
+        );
+      }
+
       return newValue;
     });
   };
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+    <ThemeContext.Provider
+      value={{ isDarkMode, toggleDarkMode, isThemeReady }}
+    >
       {children}
     </ThemeContext.Provider>
   );
