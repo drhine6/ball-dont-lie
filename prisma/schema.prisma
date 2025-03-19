@@ -41,7 +41,9 @@ model Team {
   region    Region
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+  homeLocation  String?
+  latitude  Float?
+  longitude Float?
   // Relations
   homeGames Game[]   @relation("HomeTeam")
   awayGames Game[]   @relation("AwayTeam")
@@ -67,6 +69,13 @@ model Game {
   team1Score    Int?
   team2Score    Int?
   outcome String?
+}
+
+model Location {
+  id        String   @id @default(uuid())
+  name      String
+  latitude  Float
+  longitude Float
 }
 
 // Enum types from types.ts
