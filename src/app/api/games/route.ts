@@ -11,8 +11,6 @@ export async function GET(request: NextRequest) {
       // Convert betType back to the format expected by frontend
       type: game.betType.toString().replace('_', ' '),
       // Add these fields to match the old interface
-      game: game.gameTitle,
-      balls: game.balls,
       team1: game.team1,
       team2: game.team2,
     }));

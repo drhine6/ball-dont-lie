@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { getTeamLogoUrl } from './utils';
 import { prisma } from './db';
-import { Game } from '@prisma/client';
+import { Game, Team } from '@prisma/client';
 
 /**
  * Helper function to safely get a cookie value from a Next.js server component
@@ -62,6 +62,62 @@ export async function getTeamLogoUrlServer(
   const isDarkMode = theme === 'dark';
 
   return getTeamLogoUrl(teamId, isDarkMode);
+}
+
+type ExtendedGame = Game & {
+  team1: Team;
+  team2: Team;
+};
+
+export function createRecommendations(games: ExtendedGame[]) {
+  return games.map((game) => {
+    if (game.team1.brand === 'TBD' || game.team2.brand === 'TBD') {
+      return {
+        recommendation: 'TBD',
+        gameId: game.id,
+      };
+    }
+    if (
+      game.team1.brand === 'Wilson' &&
+      game.team2.brand === 'Wilson'
+    ) {
+      return {
+        recommendation: 'OVER',
+        gameId: game.id,
+      };
+    }
+    if (
+      game.team1.brand === 'Wilson' &&
+      game.team2.brand !== 'Wilson'
+    ) {
+      return {
+        recommendation: game.team1.name,
+        gameId: game.id,
+      };
+    }
+    if (
+      game.team1.brand !== 'Wilson' &&
+      game.team2.brand === 'Wilson'
+    ) {
+      return {
+        recommendation: game.team2.name,
+        gameId: game.id,
+      };
+    }
+    if (
+      game.team1.brand !== 'Wilson' &&
+      game.team2.brand !== 'Wilson'
+    ) {
+      return {
+        recommendation: 'UNDER',
+        gameId: game.id,
+      };
+    }
+    return {
+      recommendation: 'Unknown',
+      gameId: game.id,
+    };
+  });
 }
 
 export function countRecommendations(games: Game[]): {

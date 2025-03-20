@@ -52,10 +52,7 @@ model Team {
 
 // Game model matching the Game interface in types.ts
 model Game {
-  id            String     @id @default(uuid())
-  gameTitle     String
-  region        Region
-  balls         String
+  id            String     @id @default(uuid())  
   recommendation String
   betType       BetType
   confidence    Confidence
