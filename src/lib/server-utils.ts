@@ -121,7 +121,7 @@ export function createRecommendations(games: ExtendedGame[]) {
 }
 
 export function countRecommendations(
-  games: Game[],
+  games: ExtendedGame[],
   recommendations: {
     recommendation: string;
     gameId: string;
@@ -138,19 +138,23 @@ export function countRecommendations(
   let favorites = 0;
 
   games.forEach((game) => {
-    const betType = game.betType.toString();
     const recommendation = recommendations.find(
       (r) => r.gameId === game.id,
     )?.recommendation;
 
-    if (betType === 'Upset_Alert') {
-      underdogs++;
-    } else if (betType === 'Favorite') {
+    if (!recommendation) {
+      console.log(game.id, 'No recommendation');
+    }
+    if (recommendation === game.team1.name) {
       favorites++;
+    } else if (recommendation === game.team2.name) {
+      underdogs++;
     } else if (recommendation?.includes('OVER')) {
       overs++;
     } else if (recommendation?.includes('UNDER')) {
       unders++;
+    } else {
+      console.log(game.id, recommendation, 'Unknown');
     }
   });
 
