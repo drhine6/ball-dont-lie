@@ -61,7 +61,14 @@ const Matchup: React.FC<{
   bottomTeam: Team | null;
   round: number;
   recommendation?: string;
-}> = ({ topTeam, bottomTeam, round, recommendation }) => {
+  predictedWinner?: Team | null;
+}> = ({
+  topTeam,
+  bottomTeam,
+  round,
+  recommendation,
+  predictedWinner,
+}) => {
   // Extract distance from recommendation if available
   const distanceMatch = recommendation?.match(
     /(\d+) miles (closer|more)/,
@@ -76,10 +83,31 @@ const Matchup: React.FC<{
     return 'text-gray-600 dark:text-gray-400';
   };
 
+  // Determine which team is the winner
+  const topTeamIsWinner =
+    round === 1
+      ? false // First round has no winner yet
+      : predictedWinner &&
+        topTeam &&
+        predictedWinner.id === topTeam.id
+      ? true
+      : !predictedWinner
+      ? true
+      : false; // Default to top team if no prediction
+
+  const bottomTeamIsWinner =
+    round === 1
+      ? false // First round has no winner yet
+      : predictedWinner &&
+        bottomTeam &&
+        predictedWinner.id === bottomTeam.id
+      ? true
+      : false;
+
   return (
     <div className="flex flex-col my-auto mb-1">
-      <TeamSlot team={topTeam} isWinner={round !== 1} />
-      <TeamSlot team={bottomTeam} />
+      <TeamSlot team={topTeam} isWinner={topTeamIsWinner} />
+      <TeamSlot team={bottomTeam} isWinner={bottomTeamIsWinner} />
       {recommendation && (
         <div
           className={`text-xs font-medium ${getDistanceColor()} p-1 flex gap-1 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700`}
@@ -98,6 +126,7 @@ const BracketColumn: React.FC<{
     topTeam: Team | null;
     bottomTeam: Team | null;
     recommendation?: string;
+    predictedWinner?: Team | null;
   }[];
   round: number;
   region?: string;
@@ -135,6 +164,7 @@ const BracketColumn: React.FC<{
           bottomTeam={matchup.bottomTeam}
           round={round}
           recommendation={matchup.recommendation}
+          predictedWinner={matchup.predictedWinner}
         />
       ))}
 
@@ -162,6 +192,7 @@ const Bracket: React.FC<BracketClientProps> = ({
         topTeam: Team | null;
         bottomTeam: Team | null;
         recommendation?: string;
+        predictedWinner?: Team | null;
       }[];
     } = {
       1: [], // First round
@@ -210,6 +241,7 @@ const Bracket: React.FC<BracketClientProps> = ({
 
         // Get location-based prediction if we have location data
         let recommendation: string | undefined = undefined;
+        let predictedWinner: Team | null = null;
         if (
           game.location &&
           game.locationId &&
@@ -228,6 +260,7 @@ const Bracket: React.FC<BracketClientProps> = ({
 
           if (prediction) {
             recommendation = prediction.recommendation;
+            predictedWinner = prediction.predictedWinner;
           }
         }
 
@@ -235,6 +268,7 @@ const Bracket: React.FC<BracketClientProps> = ({
           topTeam,
           bottomTeam,
           recommendation,
+          predictedWinner,
         });
       }
     });
@@ -247,6 +281,7 @@ const Bracket: React.FC<BracketClientProps> = ({
           topTeam: Team | null;
           bottomTeam: Team | null;
           recommendation?: string;
+          predictedWinner?: Team | null;
         };
       } = {};
 
@@ -289,24 +324,104 @@ const Bracket: React.FC<BracketClientProps> = ({
       if (seedMatchups[2]) rounds[1].push(seedMatchups[2]);
     }
 
+    // Location names for later rounds
+    const regionLocations = {
+      East: 'Prudential Center, Newark, NJ',
+      West: 'Chase Center, San Francisco, CA',
+      South: 'State Farm Arena, Atlanta, GA',
+      Midwest: 'Lucas Oil Stadium, Indianapolis, IN',
+    };
+
     // If we don't have actual data for later rounds, create placeholders
     // with winners from previous rounds (or leave empty)
     for (let r = 2; r <= 4; r++) {
       if (rounds[r].length === 0 && rounds[r - 1].length > 0) {
-        // Create estimated matchups for this round based on previous round winners
+        // Create matchups for this round based on previous round winners
         const prevRoundMatchups = rounds[r - 1];
 
-        // For second round:
-        // 1/16 winner vs 8/9 winner
-        // 5/12 winner vs 4/13 winner
-        // 6/11 winner vs 3/14 winner
-        // 7/10 winner vs 2/15 winner
         for (let i = 0; i < prevRoundMatchups.length; i += 2) {
           if (i < prevRoundMatchups.length - 1) {
-            rounds[r].push({
-              topTeam: prevRoundMatchups[i].topTeam,
-              bottomTeam: prevRoundMatchups[i + 1].topTeam,
-            });
+            // Get teams for this matchup - use predictedWinner if available
+            const team1 =
+              prevRoundMatchups[i].predictedWinner ||
+              prevRoundMatchups[i].topTeam;
+            const team2 =
+              prevRoundMatchups[i + 1].predictedWinner ||
+              prevRoundMatchups[i + 1].topTeam;
+
+            if (team1 && team2) {
+              // Create a fake location for this matchup
+              const locationObj = {
+                id: `${region}-round-${r}`,
+                venue:
+                  regionLocations[
+                    region as keyof typeof regionLocations
+                  ] || `${region} Regional Arena`,
+                round:
+                  r === 2
+                    ? 'Second Round'
+                    : r === 3
+                    ? 'Sweet 16'
+                    : 'Elite Eight',
+                dates: 'March 2025',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                latitude: 0, // Will be updated below
+                longitude: 0, // Will be updated below
+              };
+
+              // Set location coordinates based on region
+              if (region === 'East') {
+                locationObj.latitude = 40.7338; // Newark, NJ
+                locationObj.longitude = -74.1657;
+              } else if (region === 'West') {
+                locationObj.latitude = 37.768; // San Francisco, CA
+                locationObj.longitude = -122.3877;
+              } else if (region === 'South') {
+                locationObj.latitude = 33.7573; // Atlanta, GA
+                locationObj.longitude = -84.3963;
+              } else if (region === 'Midwest') {
+                locationObj.latitude = 39.7638; // Indianapolis, IN
+                locationObj.longitude = -86.1639;
+              }
+
+              // Create a fake game object with these teams
+              const fakeGame = {
+                id: `${region}-game-${r}-${i / 2}`,
+                team1: team1,
+                team2: team2,
+                team1Id: team1.id,
+                team2Id: team2.id,
+                locationId: locationObj.id,
+                location: locationObj,
+                // Other required game properties
+                betType: 'Favorite' as any,
+                confidence: 'High' as any,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              };
+
+              // Generate recommendation based on proximity
+              let recommendation: string | undefined = undefined;
+              let predictedWinner: Team | null = null;
+
+              // Use predictWinnerByLocation to determine the winner
+              const prediction = predictWinnerByLocation(
+                fakeGame as any,
+              );
+              if (prediction) {
+                recommendation = prediction.recommendation;
+                predictedWinner = prediction.predictedWinner;
+              }
+
+              // Add the matchup to this round
+              rounds[r].push({
+                topTeam: team1,
+                bottomTeam: team2,
+                recommendation,
+                predictedWinner,
+              });
+            }
           }
         }
       }
@@ -315,52 +430,167 @@ const Bracket: React.FC<BracketClientProps> = ({
     return rounds;
   };
 
+  // Final Four location - San Antonio, TX
+  const finalFourLocation = {
+    id: 'final-four-location',
+    venue: 'Alamodome, San Antonio, Texas',
+    round: 'Final Four',
+    dates: 'April 5 and 7, 2025',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    latitude: 29.4169, // San Antonio, TX
+    longitude: -98.4758,
+  };
+
   // Create Final Four matchups
   const getFinalFourMatchups = () => {
-    // For simplicity, we're just using the finalFourTeams array
-    // In a real application, you might have actual Final Four games in the database
-    if (finalFourTeams.length >= 4) {
-      return [
-        {
-          topTeam: finalFourTeams[0],
-          bottomTeam: finalFourTeams[1],
-        },
-        {
-          topTeam: finalFourTeams[2],
-          bottomTeam: finalFourTeams[3],
-        },
-      ];
+    const result = [];
+
+    // South vs East winner
+    if (finalFourTeams.length >= 2) {
+      const southTeam = getRegionWinner('South');
+      const eastTeam = getRegionWinner('East');
+
+      if (southTeam && eastTeam) {
+        const fakeGame = {
+          id: 'final-four-game-1',
+          team1: southTeam,
+          team2: eastTeam,
+          team1Id: southTeam.id,
+          team2Id: eastTeam.id,
+          locationId: finalFourLocation.id,
+          location: finalFourLocation,
+          betType: 'Favorite' as any,
+          confidence: 'High' as any,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        let recommendation: string | undefined = undefined;
+        let predictedWinner: Team | null = null;
+
+        const prediction = predictWinnerByLocation(fakeGame as any);
+        if (prediction) {
+          recommendation = prediction.recommendation;
+          predictedWinner = prediction.predictedWinner;
+        }
+
+        result.push({
+          topTeam: southTeam,
+          bottomTeam: eastTeam,
+          recommendation,
+          predictedWinner,
+        });
+      }
     }
 
-    // Handle case with fewer teams
-    const result = [];
-    if (finalFourTeams.length >= 2) {
-      result.push({
-        topTeam: finalFourTeams[0],
-        bottomTeam: finalFourTeams[1],
-      });
-    }
+    // West vs Midwest winner
     if (finalFourTeams.length >= 4) {
-      result.push({
-        topTeam: finalFourTeams[2],
-        bottomTeam: finalFourTeams[3],
-      });
+      const westTeam = getRegionWinner('West');
+      const midwestTeam = getRegionWinner('Midwest');
+
+      if (westTeam && midwestTeam) {
+        const fakeGame = {
+          id: 'final-four-game-2',
+          team1: westTeam,
+          team2: midwestTeam,
+          team1Id: westTeam.id,
+          team2Id: midwestTeam.id,
+          locationId: finalFourLocation.id,
+          location: finalFourLocation,
+          betType: 'Favorite' as any,
+          confidence: 'High' as any,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        let recommendation: string | undefined = undefined;
+        let predictedWinner: Team | null = null;
+
+        const prediction = predictWinnerByLocation(fakeGame as any);
+        if (prediction) {
+          recommendation = prediction.recommendation;
+          predictedWinner = prediction.predictedWinner;
+        }
+
+        result.push({
+          topTeam: westTeam,
+          bottomTeam: midwestTeam,
+          recommendation,
+          predictedWinner,
+        });
+      }
     }
 
     return result;
   };
 
+  // Helper function to get the winner from a region
+  const getRegionWinner = (region: string): Team | null => {
+    // Get the Elite 8 matchups for this region
+    const eliteEight = getGamesByRound(region)[4];
+
+    // If we have matchups, return the predicted winner of the first one
+    if (eliteEight && eliteEight.length > 0) {
+      return eliteEight[0].predictedWinner || eliteEight[0].topTeam;
+    }
+
+    // Fallback to the finalist from the provided finalFourTeams array
+    const regionIndex = ['South', 'East', 'West', 'Midwest'].indexOf(
+      region,
+    );
+    if (regionIndex >= 0 && regionIndex < finalFourTeams.length) {
+      return finalFourTeams[regionIndex];
+    }
+
+    return null;
+  };
+
   // Create Championship matchup
   const getChampionshipMatchup = () => {
     const finalFour = getFinalFourMatchups();
+
     if (finalFour.length >= 2) {
-      return [
-        {
-          topTeam: finalFour[0].topTeam,
-          bottomTeam: finalFour[1].topTeam,
-        },
-      ];
+      const team1 =
+        finalFour[0].predictedWinner || finalFour[0].topTeam;
+      const team2 =
+        finalFour[1].predictedWinner || finalFour[1].topTeam;
+
+      if (team1 && team2) {
+        const fakeGame = {
+          id: 'championship-game',
+          team1: team1,
+          team2: team2,
+          team1Id: team1.id,
+          team2Id: team2.id,
+          locationId: finalFourLocation.id,
+          location: finalFourLocation,
+          betType: 'Favorite' as any,
+          confidence: 'High' as any,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        let recommendation: string | undefined = undefined;
+        let predictedWinner: Team | null = null;
+
+        const prediction = predictWinnerByLocation(fakeGame as any);
+        if (prediction) {
+          recommendation = prediction.recommendation;
+          predictedWinner = prediction.predictedWinner;
+        }
+
+        return [
+          {
+            topTeam: team1,
+            bottomTeam: team2,
+            recommendation,
+            predictedWinner,
+          },
+        ];
+      }
     }
+
     return [];
   };
 
@@ -368,9 +598,11 @@ const Bracket: React.FC<BracketClientProps> = ({
   const getChampion = () => {
     const championship = getChampionshipMatchup();
     if (championship.length > 0) {
+      const champion =
+        championship[0].predictedWinner || championship[0].topTeam;
       return [
         {
-          topTeam: championship[0].topTeam,
+          topTeam: champion,
           bottomTeam: null,
         },
       ];
