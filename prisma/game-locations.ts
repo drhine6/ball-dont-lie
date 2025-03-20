@@ -333,24 +333,24 @@ const gamesWithLocations = [
   },
 ];
 
-const assignLocationsToGames = async () => {
-  for (const game of gamesWithLocations) {
-    const location = await prisma.location.findFirst({
-      where: {
-        venue: game.location,
-      },
-    });
-    if (location) {
-      await prisma.game.updateMany({
-        where: {
-          gameTitle: game.gameTitle,
-        },
-        data: {
-          locationId: location.id,
-        },
-      });
-    }
-  }
-};
+// const assignLocationsToGames = async () => {
+//   for (const game of gamesWithLocations) {
+//     const location = await prisma.location.findFirst({
+//       where: {
+//         venue: game.location,
+//       },
+//     });
+//     if (location) {
+//       await prisma.game.updateMany({
+//         where: {
+//           gameTitle: game.gameTitle,
+//         },
+//         data: {
+//           locationId: location.id,
+//         },
+//       });
+//     }
+//   }
+// };
 
-assignLocationsToGames();
+// assignLocationsToGames();
