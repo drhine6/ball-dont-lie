@@ -64,7 +64,7 @@ const Matchup: React.FC<{
   recommendation,
 }) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col my-auto">
       <TeamSlot team={topTeam} isWinner={round !== 1} />
       <TeamSlot team={bottomTeam} />
       {recommendation && (
@@ -99,11 +99,7 @@ const BracketColumn: React.FC<{
   };
 
   return (
-    <div
-      className={`flex flex-col ${
-        round > 4 ? 'justify-center' : ''
-      } space-y-4 min-w-[170px]`}
-    >
+    <div className="flex flex-col justify-center space-y-4 min-w-[170px]">
       {round <= 4 && (
         <div className="text-xs font-bold bg-gray-100 dark:bg-gray-700 mb-2 p-1 text-center rounded">
           {getColumnTitle()}
