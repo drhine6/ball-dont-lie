@@ -13,8 +13,8 @@ export async function GET(request: NextRequest) {
       // Add these fields to match the old interface
       game: game.gameTitle,
       balls: game.balls,
-      team1: game.team1.name,
-      team2: game.team2.name,
+      team1: game.team1,
+      team2: game.team2,
     }));
 
     return NextResponse.json(mappedGames);

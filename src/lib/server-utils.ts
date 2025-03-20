@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { getTeamLogoUrl } from './utils';
 import { prisma } from './db';
+import { Game } from '@prisma/client';
 
 /**
  * Helper function to safely get a cookie value from a Next.js server component
@@ -61,4 +62,38 @@ export async function getTeamLogoUrlServer(
   const isDarkMode = theme === 'dark';
 
   return getTeamLogoUrl(teamId, isDarkMode);
+}
+
+export function countRecommendations(games: Game[]): {
+  underdogs: number;
+  overs: number;
+  unders: number;
+  favorites: number;
+} {
+  let underdogs = 0;
+  let overs = 0;
+  let unders = 0;
+  let favorites = 0;
+
+  games.forEach((game) => {
+    const betType = game.betType.toString();
+    const recommendation = game.recommendation;
+
+    if (betType === 'Upset_Alert') {
+      underdogs++;
+    } else if (betType === 'Favorite') {
+      favorites++;
+    } else if (recommendation.includes('OVER')) {
+      overs++;
+    } else if (recommendation.includes('UNDER')) {
+      unders++;
+    }
+  });
+
+  return {
+    underdogs,
+    overs,
+    unders,
+    favorites,
+  };
 }

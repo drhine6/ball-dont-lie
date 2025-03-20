@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Team, Game } from '@prisma/client';
+import { Game, Team, BetType } from '@prisma/client';
 import {
   Table,
   TableBody,
@@ -12,42 +12,28 @@ import {
 } from '@/components/ui/table';
 import { useTeamLogo } from '@/hooks/useTeamLogo';
 import { Input } from './ui/input';
-import { useGamesAndTeams } from '@/hooks/useGamesAndTeams';
-import { LoadingMessage } from './ui/loading';
-import { AlertCircle } from 'lucide-react';
 
-// Define the extended Game type that includes the 'type' field and relations
+// Define the extended Game type that includes the relations
 type ExtendedGame = Game & {
   team1: Team;
   team2: Team;
-  type: string;
-  game: string;
+  type?: string;
 };
 
-export function GameTable() {
+interface GameTableClientProps {
+  initialGames: ExtendedGame[];
+}
+
+export function GameTable({ initialGames }: GameTableClientProps) {
   const [search, setSearch] = useState('');
-  const { games, teams, loading, error } = useGamesAndTeams();
 
   // Filter games based on search
-  const filteredGames = games.filter((game) => {
+  const filteredGames = initialGames.filter((game) => {
     return (
       game.team1.name.toLowerCase().includes(search.toLowerCase()) ||
       game.team2.name.toLowerCase().includes(search.toLowerCase())
     );
   });
-
-  if (loading) {
-    return <LoadingMessage message="Loading games and teams..." />;
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center text-red-500 py-8">
-        <AlertCircle className="h-8 w-8 mb-2" />
-        <p>Error: {error}</p>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -83,7 +69,7 @@ export function GameTable() {
             {filteredGames.map((game, index) => (
               <GameTableRow
                 key={game.id}
-                game={game as unknown as ExtendedGame}
+                game={game}
                 even={index % 2 === 0}
               />
             ))}
@@ -191,7 +177,7 @@ function GameTableRow({
               : 'bg-blue-100 text-blue-800'
           }`}
         >
-          {game.type}
+          {game.betType.replace('_', ' ')}
         </span>
       </TableCell>
     </TableRow>

@@ -44,6 +44,10 @@ model Team {
   location  String?
   latitude  Float?
   longitude Float?
+  
+  // Relations
+  homeGames Game[]   @relation("HomeTeam")
+  awayGames Game[]   @relation("AwayTeam")
 }
 
 // Game model matching the Game interface in types.ts
@@ -61,6 +65,8 @@ model Game {
   team2Id       String  
   team1Score    Int?
   team2Score    Int?
+  team1         Team     @relation("HomeTeam", fields: [team1Id], references: [id])
+  team2         Team     @relation("AwayTeam", fields: [team2Id], references: [id])
   outcome String?
   locationId    String?
 }

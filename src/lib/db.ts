@@ -92,19 +92,5 @@ export async function getAllGames() {
 export async function getGameById(id: string) {
   return prisma.game.findUnique({
     where: { id },
-    include: {
-      team1: true,
-      team2: true,
-    },
-  });
-}
-
-export async function getGamesByRegion(region: string) {
-  return prisma.game.findMany({
-    where: { region: region as any },
-    include: {
-      team1: true,
-      team2: true,
-    },
   });
 }
