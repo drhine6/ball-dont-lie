@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Team, Game } from '@prisma/client';
+import { Team, Game, Location } from '@prisma/client';
 import { useTeamLogo } from '@/hooks/useTeamLogo';
+import { predictWinnerByLocation } from '@/lib/client-utils';
 
 // Define props for the client component
 interface BracketClientProps {
@@ -11,7 +12,11 @@ interface BracketClientProps {
     [key: string]: Team[];
   };
   regionGames: {
-    [key: string]: (Game & { team1: Team; team2: Team })[];
+    [key: string]: (Game & {
+      team1: Team;
+      team2: Team;
+      location?: Location;
+    })[];
   };
   finalFourTeams: Team[];
 }
@@ -56,12 +61,36 @@ const Matchup: React.FC<{
   round: number;
   recommendation?: string;
 }> = ({ topTeam, bottomTeam, round, recommendation }) => {
+  // Extract distance from recommendation if available
+  const distanceMatch = recommendation?.match(
+    /(\d+) miles (closer|more)/,
+  );
+  const distance = distanceMatch ? parseInt(distanceMatch[1]) : 0;
+
+  // Determine color based on distance advantage
+  const getDistanceColor = () => {
+    if (distance >= 300) return 'text-green-600 dark:text-green-400';
+    if (distance >= 100) return 'text-blue-600 dark:text-blue-400';
+    if (distance >= 20) return 'text-yellow-600 dark:text-yellow-400';
+    return 'text-gray-600 dark:text-gray-400';
+  };
+
   return (
     <div className="flex flex-col my-auto">
       <TeamSlot team={topTeam} isWinner={round !== 1} />
       <TeamSlot team={bottomTeam} />
       {recommendation && (
-        <div className="mt-1 text-xs font-medium text-blue-600 dark:text-blue-400 text-center">
+        <div
+          className={`mt-2 text-xs font-medium ${getDistanceColor()} text-center p-1 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 flex items-center justify-center`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-3 w-3 mr-1"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" />
+          </svg>
           {recommendation}
         </div>
       )}
@@ -185,9 +214,33 @@ const Bracket: React.FC<BracketClientProps> = ({
           bottomTeam = game.team1;
         }
 
+        // Get location-based prediction if we have location data
+        let recommendation: string | undefined = undefined;
+        if (
+          game.location &&
+          game.locationId &&
+          topTeam &&
+          bottomTeam
+        ) {
+          // Create an ExtendedGame object with the required properties
+          const extendedGame = {
+            ...game,
+            team1: topTeam,
+            team2: bottomTeam,
+            location: game.location,
+          };
+
+          const prediction = predictWinnerByLocation(extendedGame);
+
+          if (prediction) {
+            recommendation = prediction.recommendation;
+          }
+        }
+
         rounds[round].push({
           topTeam,
           bottomTeam,
+          recommendation,
         });
       }
     });

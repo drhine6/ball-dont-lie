@@ -125,3 +125,63 @@ export function closerTeam({
     closerTeam: distanceToTeam1 < distanceToTeam2 ? team1 : team2,
   };
 }
+
+/**
+ * Predicts the winner of a game based on which team is closer to the game location
+ * @param game The game with teams and location information
+ * @returns An object with prediction details or null if prediction can't be made
+ */
+export function predictWinnerByLocation(game: ExtendedGame): {
+  predictedWinner: Team;
+  recommendation: string;
+  confidenceScore: number;
+  distanceDifference: number;
+} | null {
+  // First check if we can determine which team is closer
+  const result = closerTeam({
+    team1: game.team1,
+    team2: game.team2,
+    game,
+  });
+
+  if (!result) {
+    return null; // Can't make a prediction (missing location data)
+  }
+
+  // Calculate the difference in distance as a percentage
+  const totalDistance =
+    result.distanceToTeam1 + result.distanceToTeam2;
+  const distanceDifference = Math.abs(
+    result.distanceToTeam1 - result.distanceToTeam2,
+  );
+  const confidenceScore = Math.min(
+    Math.round((distanceDifference / totalDistance) * 100),
+    100,
+  );
+
+  // Format distance values
+  const roundedDistance = Math.round(distanceDifference);
+  const farterTeam =
+    result.distanceToTeam1 > result.distanceToTeam2
+      ? game.team1.name
+      : game.team2.name;
+
+  // Generate a recommendation message with distance information
+  let recommendation = '';
+  if (roundedDistance < 20) {
+    recommendation = `Neutral location (${farterTeam} travels ${roundedDistance} miles more)`;
+  } else if (roundedDistance < 100) {
+    recommendation = `Slight advantage for ${result.closerTeam.name} (${roundedDistance} miles closer)`;
+  } else if (roundedDistance < 300) {
+    recommendation = `Home advantage for ${result.closerTeam.name} (${roundedDistance} miles closer)`;
+  } else {
+    recommendation = `Strong home advantage for ${result.closerTeam.name} (${roundedDistance} miles closer)`;
+  }
+
+  return {
+    predictedWinner: result.closerTeam,
+    recommendation,
+    confidenceScore,
+    distanceDifference: roundedDistance,
+  };
+}
