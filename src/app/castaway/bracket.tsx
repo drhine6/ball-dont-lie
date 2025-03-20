@@ -411,13 +411,13 @@ const Bracket: React.FC<BracketClientProps> = ({
             <h2 className="text-lg font-bold mb-2 sticky left-0">
               East Region
             </h2>
-            <div className="flex space-x-8 overflow-x-auto pb-4">
+            <div className="flex flex-row-reverse space-x-8 space-x-reverse overflow-x-auto pb-4">
               {/* First Round */}
               <BracketColumn
                 matchups={getGamesByRound('East')[1]}
                 round={1}
                 region="East"
-                position="left"
+                position="right"
               />
 
               {/* Second Round */}
@@ -425,7 +425,7 @@ const Bracket: React.FC<BracketClientProps> = ({
                 matchups={getGamesByRound('East')[2]}
                 round={2}
                 region="East"
-                position="left"
+                position="right"
               />
 
               {/* Sweet 16 */}
@@ -433,7 +433,7 @@ const Bracket: React.FC<BracketClientProps> = ({
                 matchups={getGamesByRound('East')[3]}
                 round={3}
                 region="East"
-                position="left"
+                position="right"
               />
 
               {/* Elite 8 */}
@@ -441,7 +441,7 @@ const Bracket: React.FC<BracketClientProps> = ({
                 matchups={getGamesByRound('East')[4]}
                 round={4}
                 region="East"
-                position="left"
+                position="right"
               />
             </div>
           </div>
@@ -491,13 +491,13 @@ const Bracket: React.FC<BracketClientProps> = ({
             <h2 className="text-lg font-bold mb-2 sticky left-0">
               Midwest Region
             </h2>
-            <div className="flex space-x-8 overflow-x-auto pb-4">
+            <div className="flex flex-row-reverse space-x-8 space-x-reverse overflow-x-auto pb-4">
               {/* First Round */}
               <BracketColumn
                 matchups={getGamesByRound('Midwest')[1]}
                 round={1}
                 region="Midwest"
-                position="left"
+                position="right"
               />
 
               {/* Second Round */}
@@ -505,7 +505,7 @@ const Bracket: React.FC<BracketClientProps> = ({
                 matchups={getGamesByRound('Midwest')[2]}
                 round={2}
                 region="Midwest"
-                position="left"
+                position="right"
               />
 
               {/* Sweet 16 */}
@@ -513,7 +513,7 @@ const Bracket: React.FC<BracketClientProps> = ({
                 matchups={getGamesByRound('Midwest')[3]}
                 round={3}
                 region="Midwest"
-                position="left"
+                position="right"
               />
 
               {/* Elite 8 */}
@@ -521,7 +521,7 @@ const Bracket: React.FC<BracketClientProps> = ({
                 matchups={getGamesByRound('Midwest')[4]}
                 round={4}
                 region="Midwest"
-                position="left"
+                position="right"
               />
             </div>
           </div>
