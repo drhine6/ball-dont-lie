@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Team, Game, Location } from '@prisma/client';
 import { useTeamLogo } from '@/hooks/useTeamLogo';
 import { predictWinnerByLocation } from '@/lib/client-utils';
+import { MapPin } from 'lucide-react';
 
 // Define props for the client component
 interface BracketClientProps {
@@ -76,22 +77,15 @@ const Matchup: React.FC<{
   };
 
   return (
-    <div className="flex flex-col my-auto">
+    <div className="flex flex-col my-auto mb-1">
       <TeamSlot team={topTeam} isWinner={round !== 1} />
       <TeamSlot team={bottomTeam} />
       {recommendation && (
         <div
-          className={`mt-2 text-xs font-medium ${getDistanceColor()} text-center p-1 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 flex items-center justify-center`}
+          className={`text-xs font-medium ${getDistanceColor()} p-1 flex gap-1 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-3 w-3 mr-1"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" />
-          </svg>
-          {recommendation}
+          <MapPin className="w-3 h-3 my-auto shrink-0" />
+          <p>{recommendation}</p>
         </div>
       )}
     </div>
