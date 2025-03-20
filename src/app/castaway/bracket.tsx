@@ -6,7 +6,7 @@ import { Team, Game } from '@prisma/client';
 import { useTeamLogo } from '@/hooks/useTeamLogo';
 
 // Define props for the client component
-interface BracketProps {
+interface BracketClientProps {
   regionTeams: {
     [key: string]: Team[];
   };
@@ -139,7 +139,7 @@ const BracketColumn: React.FC<{
   );
 };
 
-const Bracket: React.FC<BracketProps> = ({
+const Bracket: React.FC<BracketClientProps> = ({
   regionTeams,
   regionGames,
   finalFourTeams,
@@ -348,7 +348,7 @@ const Bracket: React.FC<BracketProps> = ({
   };
 
   return (
-    <div className="py-8 px-4 md:py-16">
+    <div className="py-8 px-4 md:py-16 md:px-8 max-w-full overflow-x-auto">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -362,168 +362,285 @@ const Bracket: React.FC<BracketProps> = ({
           March Madness 2025
         </p>
       </motion.div>
-      <div className="flex justify-center">
-        <div className="flex flex-col items-center">
-          <div className="flex w-full overflow-x-auto pb-8 space-x-12">
-            <div className="flex flex-col space-y-8">
-              {regions.map((region) => {
-                const roundsData = getGamesByRound(region);
-                return (
-                  <div key={region} className="flex flex-col">
-                    <h2 className="text-lg font-bold mb-2 sticky left-0">
-                      {region} Region
-                    </h2>
-                    <div className="flex space-x-8">
-                      {/* First Round */}
-                      <BracketColumn
-                        matchups={roundsData[1]}
-                        round={1}
-                        region={region}
-                        position="left"
-                      />
 
-                      {/* Second Round */}
-                      <BracketColumn
-                        matchups={roundsData[2]}
-                        round={2}
-                        region={region}
-                        position="left"
-                      />
+      <div className="flex flex-col items-center">
+        {/* 2x2 grid for the four regions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 w-full">
+          {/* South Region - Top Left */}
+          <div className="region-container">
+            <h2 className="text-lg font-bold mb-2 sticky left-0">
+              South Region
+            </h2>
+            <div className="flex space-x-8 overflow-x-auto pb-4">
+              {/* First Round */}
+              <BracketColumn
+                matchups={getGamesByRound('South')[1]}
+                round={1}
+                region="South"
+                position="left"
+              />
 
-                      {/* Sweet 16 */}
-                      <BracketColumn
-                        matchups={roundsData[3]}
-                        round={3}
-                        region={region}
-                        position="left"
-                      />
+              {/* Second Round */}
+              <BracketColumn
+                matchups={getGamesByRound('South')[2]}
+                round={2}
+                region="South"
+                position="left"
+              />
 
-                      {/* Elite 8 */}
-                      <BracketColumn
-                        matchups={roundsData[4]}
-                        round={4}
-                        region={region}
-                        position="left"
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+              {/* Sweet 16 */}
+              <BracketColumn
+                matchups={getGamesByRound('South')[3]}
+                round={3}
+                region="South"
+                position="left"
+              />
+
+              {/* Elite 8 */}
+              <BracketColumn
+                matchups={getGamesByRound('South')[4]}
+                round={4}
+                region="South"
+                position="left"
+              />
             </div>
+          </div>
 
-            <div className="flex flex-col justify-center space-y-4">
-              <div className="flex flex-col items-center mb-8">
-                <img
-                  src="/final-four-logo.png"
-                  alt="Final Four Logo"
-                  className="w-24 h-24 mb-4"
-                  onError={(
-                    e: React.SyntheticEvent<HTMLImageElement>,
-                  ) => {
-                    const target = e.currentTarget;
-                    target.onerror = null;
-                    target.src =
-                      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%23f0f0f0' stroke='%23ddd' stroke-width='2'/%3E%3Ctext x='50' y='55' font-family='Arial' font-size='12' text-anchor='middle' fill='%23666'%3EFinal Four%3C/text%3E%3C/svg%3E";
-                  }}
+          {/* East Region - Top Right */}
+          <div className="region-container">
+            <h2 className="text-lg font-bold mb-2 sticky left-0">
+              East Region
+            </h2>
+            <div className="flex space-x-8 overflow-x-auto pb-4">
+              {/* First Round */}
+              <BracketColumn
+                matchups={getGamesByRound('East')[1]}
+                round={1}
+                region="East"
+                position="left"
+              />
+
+              {/* Second Round */}
+              <BracketColumn
+                matchups={getGamesByRound('East')[2]}
+                round={2}
+                region="East"
+                position="left"
+              />
+
+              {/* Sweet 16 */}
+              <BracketColumn
+                matchups={getGamesByRound('East')[3]}
+                round={3}
+                region="East"
+                position="left"
+              />
+
+              {/* Elite 8 */}
+              <BracketColumn
+                matchups={getGamesByRound('East')[4]}
+                round={4}
+                region="East"
+                position="left"
+              />
+            </div>
+          </div>
+
+          {/* West Region - Bottom Left */}
+          <div className="region-container">
+            <h2 className="text-lg font-bold mb-2 sticky left-0">
+              West Region
+            </h2>
+            <div className="flex space-x-8 overflow-x-auto pb-4">
+              {/* First Round */}
+              <BracketColumn
+                matchups={getGamesByRound('West')[1]}
+                round={1}
+                region="West"
+                position="left"
+              />
+
+              {/* Second Round */}
+              <BracketColumn
+                matchups={getGamesByRound('West')[2]}
+                round={2}
+                region="West"
+                position="left"
+              />
+
+              {/* Sweet 16 */}
+              <BracketColumn
+                matchups={getGamesByRound('West')[3]}
+                round={3}
+                region="West"
+                position="left"
+              />
+
+              {/* Elite 8 */}
+              <BracketColumn
+                matchups={getGamesByRound('West')[4]}
+                round={4}
+                region="West"
+                position="left"
+              />
+            </div>
+          </div>
+
+          {/* Midwest Region - Bottom Right */}
+          <div className="region-container">
+            <h2 className="text-lg font-bold mb-2 sticky left-0">
+              Midwest Region
+            </h2>
+            <div className="flex space-x-8 overflow-x-auto pb-4">
+              {/* First Round */}
+              <BracketColumn
+                matchups={getGamesByRound('Midwest')[1]}
+                round={1}
+                region="Midwest"
+                position="left"
+              />
+
+              {/* Second Round */}
+              <BracketColumn
+                matchups={getGamesByRound('Midwest')[2]}
+                round={2}
+                region="Midwest"
+                position="left"
+              />
+
+              {/* Sweet 16 */}
+              <BracketColumn
+                matchups={getGamesByRound('Midwest')[3]}
+                round={3}
+                region="Midwest"
+                position="left"
+              />
+
+              {/* Elite 8 */}
+              <BracketColumn
+                matchups={getGamesByRound('Midwest')[4]}
+                round={4}
+                region="Midwest"
+                position="left"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Final Four Section at the bottom */}
+        <div className="flex flex-col justify-center space-y-4 mt-8">
+          <div className="flex flex-col items-center mb-8">
+            <img
+              src="/final-four-logo.png"
+              alt="Final Four Logo"
+              className="w-24 h-24 mb-4"
+              onError={(
+                e: React.SyntheticEvent<HTMLImageElement>,
+              ) => {
+                const target = e.currentTarget;
+                target.onerror = null;
+                target.src =
+                  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%23f0f0f0' stroke='%23ddd' stroke-width='2'/%3E%3Ctext x='50' y='55' font-family='Arial' font-size='12' text-anchor='middle' fill='%23666'%3EFinal Four%3C/text%3E%3C/svg%3E";
+              }}
+            />
+          </div>
+
+          <div className="flex space-x-12 justify-center">
+            {/* Final Four */}
+            <BracketColumn
+              matchups={getFinalFourMatchups()}
+              round={5}
+            />
+
+            {/* Championship */}
+            <BracketColumn
+              matchups={getChampionshipMatchup()}
+              round={6}
+            />
+
+            {/* Champion */}
+            <BracketColumn matchups={getChampion()} round={7} />
+          </div>
+        </div>
+
+        <div className="flex space-x-4 mt-12">
+          <div className="flex items-center space-x-2">
+            <span className="inline-block w-3 h-3 bg-blue-500 rounded-full"></span>
+            <span className="text-sm">East</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="inline-block w-3 h-3 bg-red-500 rounded-full"></span>
+            <span className="text-sm">West</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="inline-block w-3 h-3 bg-green-500 rounded-full"></span>
+            <span className="text-sm">South</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="inline-block w-3 h-3 bg-yellow-500 rounded-full"></span>
+            <span className="text-sm">Midwest</span>
+          </div>
+        </div>
+
+        <div className="flex gap-4 mt-6 justify-center">
+          <div className="flex items-center">
+            <div className="bg-gray-200 dark:bg-gray-700 rounded p-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
                 />
-              </div>
-
-              {/* Final Four */}
-              <BracketColumn
-                matchups={getFinalFourMatchups()}
-                round={5}
-              />
-
-              {/* Championship */}
-              <BracketColumn
-                matchups={getChampionshipMatchup()}
-                round={6}
-              />
-
-              {/* Champion */}
-              <BracketColumn matchups={getChampion()} round={7} />
+              </svg>
             </div>
+            <span className="ml-2 text-sm">Print</span>
           </div>
 
-          <div className="flex space-x-4 mt-12">
-            <div className="flex items-center space-x-2">
-              <span className="inline-block w-3 h-3 bg-blue-500 rounded-full"></span>
-              <span className="text-sm">East</span>
+          <div className="flex items-center">
+            <div className="bg-gray-200 dark:bg-gray-700 rounded p-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                />
+              </svg>
             </div>
-            <div className="flex items-center space-x-2">
-              <span className="inline-block w-3 h-3 bg-red-500 rounded-full"></span>
-              <span className="text-sm">West</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="inline-block w-3 h-3 bg-green-500 rounded-full"></span>
-              <span className="text-sm">South</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="inline-block w-3 h-3 bg-yellow-500 rounded-full"></span>
-              <span className="text-sm">Midwest</span>
-            </div>
+            <span className="ml-2 text-sm">Share</span>
           </div>
 
-          <div className="flex gap-4 mt-6 justify-center">
-            <div className="flex items-center">
-              <div className="bg-gray-200 dark:bg-gray-700 rounded p-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                  />
-                </svg>
-              </div>
-              <span className="ml-2 text-sm">Print</span>
+          <div className="flex items-center">
+            <div className="bg-gray-200 dark:bg-gray-700 rounded p-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                />
+              </svg>
             </div>
-
-            <div className="flex items-center">
-              <div className="bg-gray-200 dark:bg-gray-700 rounded p-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                  />
-                </svg>
-              </div>
-              <span className="ml-2 text-sm">Share</span>
-            </div>
-
-            <div className="flex items-center">
-              <div className="bg-gray-200 dark:bg-gray-700 rounded p-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-                  />
-                </svg>
-              </div>
-              <span className="ml-2 text-sm">Save</span>
-            </div>
+            <span className="ml-2 text-sm">Save</span>
           </div>
         </div>
       </div>
