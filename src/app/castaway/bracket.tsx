@@ -54,15 +54,8 @@ const Matchup: React.FC<{
   topTeam: Team | null;
   bottomTeam: Team | null;
   round: number;
-  matchupIndex: number;
   recommendation?: string;
-}> = ({
-  topTeam,
-  bottomTeam,
-  round,
-  matchupIndex,
-  recommendation,
-}) => {
+}> = ({ topTeam, bottomTeam, round, recommendation }) => {
   return (
     <div className="flex flex-col my-auto">
       <TeamSlot team={topTeam} isWinner={round !== 1} />
@@ -86,7 +79,7 @@ const BracketColumn: React.FC<{
   round: number;
   region?: string;
   position?: string;
-}> = ({ matchups, round, region, position }) => {
+}> = ({ matchups, round }) => {
   const getColumnTitle = () => {
     if (round === 1) return 'First Round';
     if (round === 2) return 'Second Round';
@@ -118,7 +111,6 @@ const BracketColumn: React.FC<{
           topTeam={matchup.topTeam}
           bottomTeam={matchup.bottomTeam}
           round={round}
-          matchupIndex={idx}
           recommendation={matchup.recommendation}
         />
       ))}
@@ -136,12 +128,9 @@ const BracketColumn: React.FC<{
 };
 
 const Bracket: React.FC<BracketClientProps> = ({
-  regionTeams,
   regionGames,
   finalFourTeams,
 }) => {
-  const regions = Object.keys(regionTeams);
-
   // Group games by round within each region
   const getGamesByRound = (region: string) => {
     const games = regionGames[region] || [];

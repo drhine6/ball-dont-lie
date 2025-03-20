@@ -55,6 +55,8 @@ export default async function BracketPage() {
     }
   });
 
+  console.log(regionGames);
+
   // For Final Four, we need to identify games marked as "Final Four" or the highest round games
   // This is an approximation - ideally we would have a round field in the Game model
   const finalFourTeams: FinalFourTeams = [];
