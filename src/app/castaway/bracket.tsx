@@ -348,7 +348,7 @@ const Bracket: React.FC<BracketProps> = ({
   };
 
   return (
-    <div className="py-8 px-4 md:py-16 md:px-8 max-w-full overflow-x-auto">
+    <div className="py-8 px-4 md:py-16">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -362,14 +362,12 @@ const Bracket: React.FC<BracketProps> = ({
           March Madness 2025
         </p>
       </motion.div>
-
       <div className="flex justify-center">
         <div className="flex flex-col items-center">
           <div className="flex w-full overflow-x-auto pb-8 space-x-12">
             <div className="flex flex-col space-y-8">
               {regions.map((region) => {
                 const roundsData = getGamesByRound(region);
-
                 return (
                   <div key={region} className="flex flex-col">
                     <h2 className="text-lg font-bold mb-2 sticky left-0">
