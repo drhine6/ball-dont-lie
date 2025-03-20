@@ -52,8 +52,7 @@ model Team {
 
 // Game model matching the Game interface in types.ts
 model Game {
-  id            String     @id @default(uuid())  
-  recommendation String
+  id            String     @id @default(uuid())    
   betType       BetType
   confidence    Confidence
   createdAt     DateTime   @default(now())
@@ -66,6 +65,7 @@ model Game {
   team2         Team     @relation("AwayTeam", fields: [team2Id], references: [id])
   outcome String?
   locationId    String?
+  location      Location? @relation(fields: [locationId], references: [id])
 }
 
 model Location {
@@ -75,8 +75,9 @@ model Location {
   dates     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  latitude  Float?
-  longitude Float?
+  latitude  Float
+  longitude Float
+  games     Game[]
 }
 
 // Enum types from types.ts

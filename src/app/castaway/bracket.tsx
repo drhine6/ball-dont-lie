@@ -188,7 +188,6 @@ const Bracket: React.FC<BracketClientProps> = ({
         rounds[round].push({
           topTeam,
           bottomTeam,
-          recommendation: game.recommendation,
         });
       }
     });

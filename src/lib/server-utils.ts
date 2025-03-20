@@ -120,7 +120,13 @@ export function createRecommendations(games: ExtendedGame[]) {
   });
 }
 
-export function countRecommendations(games: Game[]): {
+export function countRecommendations(
+  games: Game[],
+  recommendations: {
+    recommendation: string;
+    gameId: string;
+  }[],
+): {
   underdogs: number;
   overs: number;
   unders: number;
@@ -133,15 +139,17 @@ export function countRecommendations(games: Game[]): {
 
   games.forEach((game) => {
     const betType = game.betType.toString();
-    const recommendation = game.recommendation;
+    const recommendation = recommendations.find(
+      (r) => r.gameId === game.id,
+    )?.recommendation;
 
     if (betType === 'Upset_Alert') {
       underdogs++;
     } else if (betType === 'Favorite') {
       favorites++;
-    } else if (recommendation.includes('OVER')) {
+    } else if (recommendation?.includes('OVER')) {
       overs++;
-    } else if (recommendation.includes('UNDER')) {
+    } else if (recommendation?.includes('UNDER')) {
       unders++;
     }
   });

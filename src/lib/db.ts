@@ -85,6 +85,7 @@ export async function getAllGames() {
     include: {
       team1: true,
       team2: true,
+      location: true,
     },
   });
 }

@@ -22,9 +22,16 @@ type ExtendedGame = Game & {
 
 interface GameTableClientProps {
   initialGames: ExtendedGame[];
+  recommendations: {
+    recommendation: string;
+    gameId: string;
+  }[];
 }
 
-export function GameTable({ initialGames }: GameTableClientProps) {
+export function GameTable({
+  initialGames,
+  recommendations,
+}: GameTableClientProps) {
   const [search, setSearch] = useState('');
 
   // Filter games based on search
@@ -66,13 +73,19 @@ export function GameTable({ initialGames }: GameTableClientProps) {
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-gray-200">
-            {filteredGames.map((game, index) => (
-              <GameTableRow
-                key={game.id}
-                game={game}
-                even={index % 2 === 0}
-              />
-            ))}
+            {filteredGames.map((game, index) => {
+              const recommendation = recommendations.find(
+                (r) => r.gameId === game.id,
+              );
+              return (
+                <GameTableRow
+                  key={game.id}
+                  game={game}
+                  recommendation={recommendation?.recommendation}
+                  even={index % 2 === 0}
+                />
+              );
+            })}
           </TableBody>
         </Table>
       )}
@@ -82,9 +95,11 @@ export function GameTable({ initialGames }: GameTableClientProps) {
 
 function GameTableRow({
   game,
+  recommendation,
   even,
 }: {
   game: ExtendedGame;
+  recommendation: string | undefined;
   even: boolean;
 }) {
   const team1Logo = useTeamLogo(game.team1.logoId || undefined);
@@ -156,16 +171,16 @@ function GameTableRow({
       </TableCell>
       <TableCell
         className={`py-3 px-4 font-medium ${
-          game.recommendation.includes('UNDER')
+          recommendation?.includes('UNDER')
             ? 'text-blue-600'
-            : game.recommendation.includes('OVER')
+            : recommendation?.includes('OVER')
             ? 'text-green-600'
-            : game.type === 'Upset Alert'
+            : recommendation?.includes('Upset Alert')
             ? 'text-red-600'
             : 'text-text'
         }`}
       >
-        {game.recommendation}
+        {recommendation}
       </TableCell>
       <TableCell className="py-3 px-4">
         <span

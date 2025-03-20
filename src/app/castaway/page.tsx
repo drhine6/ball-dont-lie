@@ -2,6 +2,7 @@ import React from 'react';
 import { getAllTeams, getAllGames } from '@/lib/db';
 import { Team, Game } from '@prisma/client';
 import Bracket from './bracket';
+import { createRecommendations } from '@/lib/server-utils';
 
 // Types for our bracket data structure
 type RegionTeams = {

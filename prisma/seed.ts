@@ -43,7 +43,6 @@ async function main() {
 
     await prisma.game.create({
       data: {
-        recommendation: game.recommendation,
         betType: game.type.replace(' ', '_') as any,
         confidence: game.confidence as any,
         team1Id,

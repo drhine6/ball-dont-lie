@@ -1,4 +1,9 @@
 // Client-side utility functions
+import { Team } from '@prisma/client';
+import { Game } from '@prisma/client';
+import { Location } from '@prisma/client';
+import { point } from '@turf/helpers';
+import { distance } from '@turf/distance';
 
 // Get or create a unique ID for anonymous users
 export function getAnonymousUserId(): string {
@@ -74,4 +79,49 @@ export async function getThemePreference(): Promise<
     console.error('Error getting theme from API:', error);
     return 'light'; // Default to light theme if API fails
   }
+}
+
+type ExtendedGame = Game & {
+  team1: Team;
+  team2: Team;
+  location: Location;
+};
+
+export function closerTeam({
+  team1,
+  team2,
+  game,
+}: {
+  team1: Team;
+  team2: Team;
+  game: ExtendedGame;
+}) {
+  if (
+    !team1.latitude ||
+    !team1.longitude ||
+    !team2.latitude ||
+    !team2.longitude ||
+    !game.locationId
+  ) {
+    return null;
+  }
+  const team1Point = point([team1.latitude, team1.longitude]);
+  const team2Point = point([team2.latitude, team2.longitude]);
+  const gamePoint = point([
+    game.location.latitude,
+    game.location.longitude,
+  ]);
+
+  const distanceToTeam1 = distance(team1Point, gamePoint, {
+    units: 'miles',
+  });
+  const distanceToTeam2 = distance(team2Point, gamePoint, {
+    units: 'miles',
+  });
+
+  return {
+    distanceToTeam1,
+    distanceToTeam2,
+    closerTeam: distanceToTeam1 < distanceToTeam2 ? team1 : team2,
+  };
 }
