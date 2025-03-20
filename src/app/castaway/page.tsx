@@ -1,19 +1,24 @@
 import React from 'react';
-import { getAllTeams } from '@/lib/db';
-import { Team } from '@prisma/client';
-import BracketClient from './bracket-client';
+import { getAllTeams, getAllGames } from '@/lib/db';
+import { Team, Game } from '@prisma/client';
+import Bracket from './bracket';
 
 // Types for our bracket data structure
 type RegionTeams = {
   [key: string]: Team[];
 };
 
+type RegionGames = {
+  [key: string]: (Game & { team1: Team; team2: Team })[];
+};
+
 type FinalFourTeams = Team[];
 
 // Server component to fetch data
 export default async function BracketPage() {
-  // Fetch all teams from the database
+  // Fetch all teams and games from the database
   const allTeams = await getAllTeams();
+  const allGames = await getAllGames();
 
   // Group teams by region
   const regionTeams: RegionTeams = {
@@ -23,7 +28,15 @@ export default async function BracketPage() {
     Midwest: [],
   };
 
-  // Assign teams to their regions (using region field from Team model)
+  // Group games by region
+  const regionGames: RegionGames = {
+    South: [],
+    East: [],
+    West: [],
+    Midwest: [],
+  };
+
+  // Assign teams to their regions
   allTeams.forEach((team) => {
     const region = team.region;
     if (region && region in regionTeams) {
@@ -31,30 +44,38 @@ export default async function BracketPage() {
     }
   });
 
-  // Sort teams within each region by seed
-  Object.keys(regionTeams).forEach((region) => {
-    regionTeams[region].sort((a, b) => (a.seed || 0) - (b.seed || 0));
+  // Assign games to their regions based on team1's region
+  // This assumes all games within a region have team1 from that region
+  allGames.forEach((game) => {
+    const region = game.team1?.region;
+    if (region && region in regionGames) {
+      regionGames[region].push(
+        game as Game & { team1: Team; team2: Team },
+      );
+    }
   });
 
-  // For Final Four, we could either:
-  // 1. Have a separate table for "advancing teams"
-  // 2. Hardcode the final four teams for demo purposes
-  // Since we don't know the exact data model, we'll use option 2 for now
-
-  // Pick some teams for the Final Four (one from each region)
+  // For Final Four, we need to identify games marked as "Final Four" or the highest round games
+  // This is an approximation - ideally we would have a round field in the Game model
   const finalFourTeams: FinalFourTeams = [];
 
+  // Select a team from each region for the Final Four based on your data structure
+  // This is placeholder logic - replace with actual logic based on your database
   Object.keys(regionTeams).forEach((region) => {
     if (regionTeams[region].length > 0) {
-      // Pick the first team from each region (usually the highest seed)
-      finalFourTeams.push(regionTeams[region][0]);
+      // For now, just use the top seeded team from each region
+      finalFourTeams.push(
+        regionTeams[region].find((team) => team.seed === 1) ||
+          regionTeams[region][0],
+      );
     }
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <BracketClient
+    <div className="min-h-screen bg-bg text-text">
+      <Bracket
         regionTeams={regionTeams}
+        regionGames={regionGames}
         finalFourTeams={finalFourTeams}
       />
     </div>
